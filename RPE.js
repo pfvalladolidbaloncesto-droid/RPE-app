@@ -11,15 +11,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const comentariosInput = document.getElementById("comentarios");
   const rpeForm = document.getElementById("rpeForm");
 
-  // 1. Actualizar el valor visual del RPE (compatible con PC, iOS y Android)
+  // 1. Actualización visual instantánea compatible con móviles
   if (rpeInput && rpeValueDisplay) {
     const actualizarTextoRPE = () => {
-      rpeValueDisplay.textContent = rpeInput.value;
+      window.requestAnimationFrame(() => {
+        rpeValueDisplay.textContent = rpeInput.value;
+      });
     };
 
-    rpeInput.addEventListener("input", actualizarTextoRPE);
-    rpeInput.addEventListener("change", actualizarTextoRPE);
-    rpeInput.addEventListener("touchmove", actualizarTextoRPE);
+    // Varios listeners para cubrir todas las variantes de navegadores móviles
+    ['input', 'change', 'touchmove', 'pointermove', 'touchend'].forEach(evt => {
+      rpeInput.addEventListener(evt, actualizarTextoRPE, { passive: true });
+    });
   }
 
   // 2. Establecer fecha actual local (YYYY-MM-DD)
