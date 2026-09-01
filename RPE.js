@@ -6,29 +6,37 @@ document.addEventListener("DOMContentLoaded", () => {
   const equipoSelect = document.getElementById("equiposel");
   const entrenamientoSelect = document.getElementById("entrenamiento");
   const rpeInput = document.getElementById("rpe");
+  const rpeValueDisplay = document.getElementById("rpeValue");
   const estatusSelect = document.getElementById("estatus");
   const comentariosInput = document.getElementById("comentarios");
   const rpeForm = document.getElementById("rpeForm");
 
-  // 1. Establecer fecha actual local (YYYY-MM-DD)
+  // 1. Actualizar el valor en texto del RPE en tiempo real cuando se mueve el slider
+  if (rpeInput && rpeValueDisplay) {
+    rpeInput.addEventListener("input", (e) => {
+      rpeValueDisplay.textContent = e.target.value;
+    });
+  }
+
+  // 2. Establecer fecha actual local (YYYY-MM-DD)
   const now = new Date();
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, '0');
   const day = String(now.getDate()).padStart(2, '0');
   fechaInput.value = `${year}-${month}-${day}`;
 
-  // 2. Cargar Nombre de Usuario desde el localStorage
+  // 3. Cargar Nombre de Usuario desde localStorage
   const usuarioGuardado = localStorage.getItem("Usuario") || localStorage.getItem("startValue") || "";
   nombreInput.value = usuarioGuardado;
   nombreInput.readOnly = true;
 
-  // 3. Cargar Equipo instantáneamente desde memoria local (sin peticiones de red)
+  // 4. Cargar Equipo instantáneamente desde memoria local
   const equipoGuardado = localStorage.getItem("EquipoPrin") || "";
   if (equipoGuardado) {
     equipoSelect.value = equipoGuardado;
   }
 
-  // 4. Envío del formulario a Google Forms
+  // 5. Envío del formulario a Google Forms
   rpeForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -50,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
       mensajeError = "Comprueba campos obligatorios";
     }
 
-    const rpeVal = parseFloat(rpeInput.value);
+    const rpeVal = parseInt(rpeInput.value, 10);
     if (isNaN(rpeVal) || rpeVal < 0 || rpeVal > 10) {
       rpeInput.classList.add("input-error");
       isValid = false;
@@ -67,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
       'entry.1144883834': nombreInput.value,
       'entry.697775640': equipoSelect.value,
       'entry.1150680246': entrenamientoSelect.value,
-      'entry.961295529': rpeInput.value,
+      'entry.961295529': rpeVal.toString(),
       'entry.1650450183': estatusSelect.value,
       'entry.1691140284': comentariosInput.value || ""
     });
