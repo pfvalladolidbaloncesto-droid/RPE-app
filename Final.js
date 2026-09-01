@@ -10,12 +10,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (btnLogOut) {
     btnLogOut.addEventListener("click", () => {
-      // Limpiar datos de la sesión activa
-      localStorage.removeItem("Usuario");
-      localStorage.removeItem("startValue");
-      localStorage.removeItem("EquipoPrin");
+      const estaRecordado = localStorage.getItem("remember") === "true";
 
-      // Redirección limpia
+      // Si NO eligió recordar, limpiamos todo. Si eligió recordar, mantenemos "Usuario" y "remember"
+      if (!estaRecordado) {
+        localStorage.removeItem("Usuario");
+        localStorage.removeItem("startValue");
+      }
+      
+      localStorage.removeItem("EquipoPrin"); // Borramos datos del equipo de la sesión activa
+
       window.location.replace("index.html");
     });
   }
