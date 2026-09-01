@@ -11,21 +11,29 @@ document.addEventListener("DOMContentLoaded", async () => {
   const comentariosInput = document.getElementById("comentarios");
   const rpeForm = document.getElementById("rpeForm");
 
-  // Establecer fecha actual por defecto (YYYY-MM-DD)
-  const today = new Date().toISOString().split('T')[0];
-  fechaInput.value = today;
+  // 1. Establecer fecha actual local por defecto (YYYY-MM-DD)
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  fechaInput.value = `${year}-${month}-${day}`;
 
-  // Recuperar el usuario guardado previamente en el Login
+  // 2. Recuperar el usuario guardado y bloquear edición
   const usuarioGuardado = localStorage.getItem("Usuario") || localStorage.getItem("startValue") || "";
   nombreInput.value = usuarioGuardado;
+  nombreInput.readOnly = true; 
 
-  // Consultar equipo asignado desde Apps Script
+  // 3. Consultar equipo asignado (columna4 - EquipoPrin) desde Apps Script
   if (usuarioGuardado) {
     try {
-      const response = await fetch(`${APPS_SCRIPT_URL}?accion=consultar&num=${encodeURIComponent(usuarioGuardado)}`);
+      const response = await fetch(`${APPS_SCRIPT_URL}?accion=consultar&num=${encodeURIComponent(usuarioGuardado)}`, {
+        cache: "no-store"
+      });
       const data = await response.json();
+      
       if (Array.isArray(data) && data.length > 0) {
-        const equipoEncontrado = data[0].columna3 || "";
+        // Tomamos columna4 (EquipoPrin) o hacemos fallback a columna3
+        const equipoEncontrado = data[0].columna4 || data[0].columna3 || "";
         if (equipoEncontrado) {
           equipoSelect.value = equipoEncontrado;
         }
@@ -35,7 +43,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // Envío del formulario con validaciones estrictas
+  // Envío del formulario con validaciones
   rpeForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
