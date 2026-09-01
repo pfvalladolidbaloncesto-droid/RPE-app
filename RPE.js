@@ -11,11 +11,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const comentariosInput = document.getElementById("comentarios");
   const rpeForm = document.getElementById("rpeForm");
 
-  // 1. Actualizar el valor en texto del RPE en tiempo real cuando se mueve el slider
+  // 1. Actualizar el valor visual del RPE (compatible con PC, iOS y Android)
   if (rpeInput && rpeValueDisplay) {
-    rpeInput.addEventListener("input", (e) => {
-      rpeValueDisplay.textContent = e.target.value;
-    });
+    const actualizarTextoRPE = () => {
+      rpeValueDisplay.textContent = rpeInput.value;
+    };
+
+    rpeInput.addEventListener("input", actualizarTextoRPE);
+    rpeInput.addEventListener("change", actualizarTextoRPE);
+    rpeInput.addEventListener("touchmove", actualizarTextoRPE);
   }
 
   // 2. Establecer fecha actual local (YYYY-MM-DD)
