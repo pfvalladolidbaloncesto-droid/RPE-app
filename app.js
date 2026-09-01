@@ -5,14 +5,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const usernameInput = document.getElementById("username");
   const passwordInput = document.getElementById("password");
   const rememberMeCheckbox = document.getElementById("rememberMe");
+  const btnEnter = document.getElementById("btnEnter");
 
-  // Cargar usuario recordado
+  // Cargar usuario recordado si existe la marca "remember"
   const usuarioRecordado = localStorage.getItem("Usuario") || localStorage.getItem("startValue") || "";
   const estaRecordado = localStorage.getItem("remember") === "true";
 
   if (estaRecordado && usuarioRecordado) {
     usernameInput.value = usuarioRecordado;
     rememberMeCheckbox.checked = true;
+  } else {
+    usernameInput.value = "";
+    passwordInput.value = "";
+    rememberMeCheckbox.checked = false;
   }
 
   loginForm.addEventListener("submit", async (e) => {
@@ -26,6 +31,9 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    // Bloquear botón para evitar dobles clics
+    if (btnEnter) btnEnter.disabled = true;
+
     try {
       const response = await fetch(`${APPS_SCRIPT_URL}?accion=consultar&num=${encodeURIComponent(userInput)}`, {
         cache: "no-store"
@@ -38,14 +46,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await response.json();
       let loginExitoso = false;
 
-      // Verificamos si Apps Script devolvió al menos un registro
       if (Array.isArray(data) && data.length > 0) {
         const registro = data[0];
-
-        // Extraemos la contraseña de 'columna2'
         const passBD = String(registro.columna2 ?? "").trim();
 
-        // Si la contraseña coincide con la ingresada
         if (passBD === passInput) {
           loginExitoso = true;
         }
@@ -54,7 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (loginExitoso) {
         const registro = data[0];
         
-        // Guardamos usuario Y el equipo devuelto por el servidor
         localStorage.setItem("Usuario", userInput);
         localStorage.setItem("startValue", userInput);
         localStorage.setItem("EquipoPrin", registro.columna4 || registro.columna3 || "");
@@ -68,11 +71,13 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.href = "RPE.html";
       } else {
         alert("Verifica tus credenciales");
+        if (btnEnter) btnEnter.disabled = false;
       }
 
     } catch (error) {
       console.error("Error en la autenticación:", error);
       alert("Error de conexión al verificar credenciales.");
+      if (btnEnter) btnEnter.disabled = false;
     }
   });
 });
