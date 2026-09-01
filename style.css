@@ -106,3 +106,53 @@ textarea, select {
 .btn-secondary:hover {
   background-color: #5a6268;
 }
+/* Estilos para el Slider RPE */
+.rpe-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 12px;
+  border-radius: 6px;
+  /* Degradado de verde (#28a745) a rojo (#dc3545) */
+  background: linear-gradient(to right, #28a745, #ffc107, #dc3545);
+  outline: none;
+  margin: 10px 0;
+}
+
+/* Control circular del slider (Thumb) en navegadores WebKit (Chrome, Safari, Edge) */
+.rpe-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #333;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Control circular del slider en Firefox */
+.rpe-slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #333;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Etiquetas explicativas debajo del slider */
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: bold;
+}
+
+#rpeValue {
+  font-weight: bold;
+  color: #007bff;
+}
