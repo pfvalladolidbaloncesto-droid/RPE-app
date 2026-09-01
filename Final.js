@@ -7,20 +7,20 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = "RPE.html";
     });
   }
-
-  if (btnLogOut) {
+if (btnLogOut) {
     btnLogOut.addEventListener("click", () => {
       const estaRecordado = localStorage.getItem("remember") === "true";
 
-      // Si NO eligió recordar, limpiamos todo. Si eligió recordar, mantenemos "Usuario" y "remember"
+      // Si NO eligió recordar, borramos las credenciales guardadas
       if (!estaRecordado) {
         localStorage.removeItem("Usuario");
-        localStorage.removeItem("startValue");
+        localStorage.removeItem("PassRecordada");
       }
       
-      localStorage.removeItem("EquipoPrin"); // Borramos datos del equipo de la sesión activa
+      localStorage.removeItem("EquipoPrin"); // Limpia la sesión actual del equipo
 
       window.location.replace("index.html");
     });
   }
+
 });
