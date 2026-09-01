@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const passwordInput = document.getElementById("password");
   const rememberMeCheckbox = document.getElementById("rememberMe");
 
-  // Cargar usuario recordado si existe
+  // Cargar usuario recordado
   const usuarioRecordado = localStorage.getItem("Usuario") || localStorage.getItem("startValue") || "";
   const estaRecordado = localStorage.getItem("remember") === "true";
 
@@ -27,7 +27,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      // Petición al servidor evitando la caché del navegador
       const response = await fetch(`${APPS_SCRIPT_URL}?accion=consultar&num=${encodeURIComponent(userInput)}`, {
         cache: "no-store"
       });
@@ -39,23 +38,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await response.json();
       let loginExitoso = false;
 
+      // Verificamos si Apps Script devolvió al menos un registro
       if (Array.isArray(data) && data.length > 0) {
-        for (const fila of data) {
-          // Convertimos ambas columnas a String
-          const usuarioBD = String(fila.columna1 ?? fila.num ?? "").trim();
-          const passBD = String(fila.columna2 ?? "").trim();
+        const registro = data[0];
 
-          // Comprobamos que la contraseña en la BD no esté vacía
-          if (passBD !== "") {
-            const usuarioCoincide = usuarioBD.toLowerCase() === userInput.toLowerCase() || 
-                                    userInput.toLowerCase() === String(fila.num ?? "").toLowerCase();
-            const passwordCoincide = passBD === passInput;
+        // Extraemos la contraseña de 'columna2' (convertida a texto para comparar "1" con 1)
+        const passBD = String(registro.columna2 ?? "").trim();
 
-            if (usuarioCoincide && passwordCoincide) {
-              loginExitoso = true;
-              break;
-            }
-          }
+        // Si la contraseña coincide con la ingresada
+        if (passBD === passInput) {
+          loginExitoso = true;
         }
       }
 
