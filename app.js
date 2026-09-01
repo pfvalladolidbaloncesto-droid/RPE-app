@@ -7,22 +7,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const rememberMeCheckbox = document.getElementById("rememberMe");
   const btnEnter = document.getElementById("btnEnter");
 
-  // 1. Cargar Usuario Y Contraseña si 'remember' está activo localmente
+  // 1. Cargar Usuario Y Contraseña al iniciar si está marcado recuérdame
   const estaRecordado = localStorage.getItem("remember") === "true";
-  const usuarioRecordado = localStorage.getItem("Usuario") || "";
-  const passRecordada = localStorage.getItem("PassRecordada") || "";
-
-  if (estaRecordado && usuarioRecordado) {
-    usernameInput.value = usuarioRecordado;
-    passwordInput.value = passRecordada;
+  if (estaRecordado) {
+    usernameInput.value = localStorage.getItem("Usuario") || "";
+    passwordInput.value = localStorage.getItem("PassRecordada") || "";
     rememberMeCheckbox.checked = true;
-  } else {
-    usernameInput.value = "";
-    passwordInput.value = "";
-    rememberMeCheckbox.checked = false;
   }
 
-  // 2. Proceso de autenticación
+  // 2. Evento Login
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -35,6 +28,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (btnEnter) btnEnter.disabled = true;
+
+    // 3. Guardar INMEDIATAMENTE la preferencia de Recuérdame local
+    if (rememberMeCheckbox.checked) {
+      localStorage.setItem("remember", "true");
+      localStorage.setItem("Usuario", userInput);
+      localStorage.setItem("PassRecordada", passInput);
+    } else {
+      localStorage.removeItem("remember");
+      localStorage.removeItem("Usuario");
+      localStorage.removeItem("PassRecordada");
+    }
 
     try {
       const response = await fetch(`${APPS_SCRIPT_URL}?accion=consultar&num=${encodeURIComponent(userInput)}`, {
@@ -60,17 +64,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (loginExitoso) {
         const registro = data[0];
         
+        // Guardar sesión activa del equipo
         localStorage.setItem("Usuario", userInput);
         localStorage.setItem("EquipoPrin", registro.columna4 || registro.columna3 || "");
-
-        // Guardar o eliminar tanto el usuario como la contraseña localmente
-        if (rememberMeCheckbox.checked) {
-          localStorage.setItem("remember", "true");
-          localStorage.setItem("PassRecordada", passInput);
-        } else {
-          localStorage.removeItem("remember");
-          localStorage.removeItem("PassRecordada");
-        }
 
         window.location.href = "RPE.html";
       } else {
