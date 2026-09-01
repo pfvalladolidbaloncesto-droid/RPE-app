@@ -51,9 +51,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      if (loginExitoso) {
+if (loginExitoso) {
+        const registro = data[0];
+        
+        // Guardamos usuario Y el equipo devuelto por el servidor
         localStorage.setItem("Usuario", userInput);
         localStorage.setItem("startValue", userInput);
+        localStorage.setItem("EquipoPrin", registro.columna4 || registro.columna3 || "");
 
         if (rememberMeCheckbox.checked) {
           localStorage.setItem("remember", "true");
@@ -62,6 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         window.location.href = "RPE.html";
+      }
       } else {
         alert("Verifica tus credenciales");
       }
