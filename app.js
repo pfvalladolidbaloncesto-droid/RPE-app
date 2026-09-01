@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (Array.isArray(data) && data.length > 0) {
         const registro = data[0];
 
-        // Extraemos la contraseña de 'columna2' (convertida a texto para comparar "1" con 1)
+        // Extraemos la contraseña de 'columna2'
         const passBD = String(registro.columna2 ?? "").trim();
 
         // Si la contraseña coincide con la ingresada
@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-if (loginExitoso) {
+      if (loginExitoso) {
         const registro = data[0];
         
         // Guardamos usuario Y el equipo devuelto por el servidor
@@ -66,7 +66,6 @@ if (loginExitoso) {
         }
 
         window.location.href = "RPE.html";
-      }
       } else {
         alert("Verifica tus credenciales");
       }
