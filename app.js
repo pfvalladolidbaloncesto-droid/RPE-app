@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const rememberMeCheckbox = document.getElementById("rememberMe");
   const btnEnter = document.getElementById("btnEnter");
 
-  // Cargar usuario recordado si existe la marca "remember"
+  // 1. Cargar usuario si 'remember' está activo
   const usuarioRecordado = localStorage.getItem("Usuario") || localStorage.getItem("startValue") || "";
   const estaRecordado = localStorage.getItem("remember") === "true";
 
@@ -16,10 +16,12 @@ document.addEventListener("DOMContentLoaded", () => {
     rememberMeCheckbox.checked = true;
   } else {
     usernameInput.value = "";
-    passwordInput.value = "";
     rememberMeCheckbox.checked = false;
   }
+  
+  passwordInput.value = ""; // La contraseña siempre se pide por seguridad
 
+  // 2. Evento de envío del formulario
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -31,7 +33,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Bloquear botón para evitar dobles clics
     if (btnEnter) btnEnter.disabled = true;
 
     try {
@@ -62,6 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("startValue", userInput);
         localStorage.setItem("EquipoPrin", registro.columna4 || registro.columna3 || "");
 
+        // Guardar o borrar preferencia de recordar
         if (rememberMeCheckbox.checked) {
           localStorage.setItem("remember", "true");
         } else {
