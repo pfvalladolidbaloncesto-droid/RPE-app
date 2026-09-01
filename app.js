@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const passwordInput = document.getElementById("password");
   const rememberMeCheckbox = document.getElementById("rememberMe");
 
-  // Cargar usuario recordado
+  // Cargar usuario recordado si existe
   const usuarioRecordado = localStorage.getItem("Usuario") || localStorage.getItem("startValue") || "";
   const estaRecordado = localStorage.getItem("remember") === "true";
 
@@ -27,7 +27,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      const response = await fetch(`${APPS_SCRIPT_URL}?accion=consultar&num=${encodeURIComponent(userInput)}`);
+      // Petición al servidor evitando la caché del navegador
+      const response = await fetch(`${APPS_SCRIPT_URL}?accion=consultar&num=${encodeURIComponent(userInput)}`, {
+        cache: "no-store"
+      });
       
       if (!response.ok) {
         throw new Error("Error en la respuesta del servidor");
@@ -38,17 +41,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (Array.isArray(data) && data.length > 0) {
         for (const fila of data) {
-          // Convertimos ambas columnas a String para aceptar letras, números o combinaciones
+          // Convertimos ambas columnas a String
           const usuarioBD = String(fila.columna1 ?? fila.num ?? "").trim();
           const passBD = String(fila.columna2 ?? "").trim();
 
-          // Validación de usuario (sin importar mayúsculas) y contraseña exacta
-          const usuarioCoincide = usuarioBD.toLowerCase() === userInput.toLowerCase() || userInput.toLowerCase() === String(fila.num ?? "").toLowerCase();
-          const passwordCoincide = passBD === passInput;
+          // Comprobamos que la contraseña en la BD no esté vacía
+          if (passBD !== "") {
+            const usuarioCoincide = usuarioBD.toLowerCase() === userInput.toLowerCase() || 
+                                    userInput.toLowerCase() === String(fila.num ?? "").toLowerCase();
+            const passwordCoincide = passBD === passInput;
 
-          if (usuarioCoincide && passwordCoincide) {
-            loginExitoso = true;
-            break;
+            if (usuarioCoincide && passwordCoincide) {
+              loginExitoso = true;
+              break;
+            }
           }
         }
       }
