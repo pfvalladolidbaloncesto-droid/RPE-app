@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RPE - Registro</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="form-container">
+    <h2>Registro</h2>
+
+    <form id="rpeForm" novalidate>
+      <div class="form-group">
+        <label for="fecha">Fecha</label>
+        <input type="date" id="fecha" required>
+      </div>
+
+      <div class="form-group">
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" required readonly>
+      </div>
+
+      <div class="form-group">
+        <label for="equiposel">Equipo</label>
+        <select id="equiposel" required>
+          <option value="">-- Seleccionar --</option>
+          <option value="Infantil B">Infantil B</option>
+          <option value="Infantil A">Infantil A</option>
+          <option value="Cadete B">Cadete B</option>
+          <option value="Cadete A">Cadete A</option>
+          <option value="Junior B">Junior B</option>
+          <option value="Junior A">Junior A</option>
+          <option value="EBA">EBA</option>
+          <option value="LEB">LEB</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="entrenamiento">Entrenamiento</label>
+        <select id="entrenamiento" required>
+          <option value="">-- Seleccionar --</option>
+          <option value="Físico">Físico</option>
+          <option value="Pista">Pista</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="rpe">RPE (0-10)</label>
+        <input type="number" id="rpe" min="0" max="10" required>
+      </div>
+
+      <div class="form-group">
+        <label for="estatus">Estatus</label>
+        <select id="estatus" required>
+          <option value="Completo" selected>Completo</option>
+          <option value="Limitado">Limitado</option>
+          <option value="Lesionado">Lesionado</option>
+          <option value="Ausente">Ausente</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="comentarios">Observaciones</label>
+        <textarea id="comentarios" rows="3"></textarea>
+      </div>
+
+      <button type="submit" id="btnEnviar">Enviar</button>
+      <button type="button" id="btnFunciones" class="btn-secondary" disabled>Menú de opciones</button>
+    </form>
+  </main>
+
+  <script src="rpe.js"></script>
+</body>
+</html>
