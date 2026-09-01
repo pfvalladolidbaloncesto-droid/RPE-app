@@ -7,19 +7,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const rememberMeCheckbox = document.getElementById("rememberMe");
   const btnEnter = document.getElementById("btnEnter");
 
-  // 1. Cargar el usuario guardado EXCLUSIVAMENTE en este dispositivo/navegador
+  // 1. Cargar Usuario Y Contraseña si 'remember' está activo localmente
   const estaRecordado = localStorage.getItem("remember") === "true";
   const usuarioRecordado = localStorage.getItem("Usuario") || "";
+  const passRecordada = localStorage.getItem("PassRecordada") || "";
 
   if (estaRecordado && usuarioRecordado) {
     usernameInput.value = usuarioRecordado;
+    passwordInput.value = passRecordada;
     rememberMeCheckbox.checked = true;
   } else {
     usernameInput.value = "";
+    passwordInput.value = "";
     rememberMeCheckbox.checked = false;
   }
-
-  passwordInput.value = ""; // La contraseña nunca se autocompleta por seguridad
 
   // 2. Proceso de autenticación
   loginForm.addEventListener("submit", async (e) => {
@@ -59,15 +60,16 @@ document.addEventListener("DOMContentLoaded", () => {
       if (loginExitoso) {
         const registro = data[0];
         
-        // Guardamos el usuario y equipo en la memoria LOCAL del teléfono de este deportista
         localStorage.setItem("Usuario", userInput);
         localStorage.setItem("EquipoPrin", registro.columna4 || registro.columna3 || "");
 
-        // Gestionar la casilla "Recuérdame" a nivel local
+        // Guardar o eliminar tanto el usuario como la contraseña localmente
         if (rememberMeCheckbox.checked) {
           localStorage.setItem("remember", "true");
+          localStorage.setItem("PassRecordada", passInput);
         } else {
           localStorage.removeItem("remember");
+          localStorage.removeItem("PassRecordada");
         }
 
         window.location.href = "RPE.html";
