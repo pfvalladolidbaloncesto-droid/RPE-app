@@ -1,3 +1,4 @@
+
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxdPBRk_cUzzhT-NkjLkjTIuzs_YUAC3z-R88p7Nh-KZK6YxREiue0ctho1c1pNabndaQ/exec";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -7,11 +8,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const rememberMeCheckbox = document.getElementById("rememberMe");
   const btnEnter = document.getElementById("btnEnter");
 
-  // 1. Cargar Usuario Y Contraseña al iniciar si está marcado recuérdame
-  const estaRecordado = localStorage.getItem("remember") === "true";
+  // 1. Cargar usuario y contraseña si está marcado "Recuérdame"
+  const estaRecordado =
+    localStorage.getItem("remember") === "true";
+
   if (estaRecordado) {
-    usernameInput.value = localStorage.getItem("Usuario") || "";
-    passwordInput.value = localStorage.getItem("PassRecordada") || "";
+    usernameInput.value =
+      localStorage.getItem("Usuario") || "";
+
+    passwordInput.value =
+      localStorage.getItem("PassRecordada") || "";
+
     rememberMeCheckbox.checked = true;
   }
 
@@ -29,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (btnEnter) btnEnter.disabled = true;
 
-    // 3. Guardar INMEDIATAMENTE la preferencia de Recuérdame local
+    // 3. Guardar la preferencia de "Recuérdame"
     if (rememberMeCheckbox.checked) {
       localStorage.setItem("remember", "true");
       localStorage.setItem("Usuario", userInput);
@@ -41,10 +48,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      const response = await fetch(`${APPS_SCRIPT_URL}?accion=consultar&num=${encodeURIComponent(userInput)}`, {
-        cache: "no-store"
-      });
-      
+      // 4. Comprobar credenciales en Google Apps Script
+      const response = await fetch(
+        `${APPS_SCRIPT_URL}?accion=consultar&num=${encodeURIComponent(userInput)}`,
+        {
+          cache: "no-store"
+        }
+      );
+
       if (!response.ok) {
         throw new Error("Error en la respuesta del servidor");
       }
@@ -54,30 +65,58 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (Array.isArray(data) && data.length > 0) {
         const registro = data[0];
-        const passBD = String(registro.columna2 ?? "").trim();
+
+        const passBD = String(
+          registro.columna2 ?? ""
+        ).trim();
 
         if (passBD === passInput) {
           loginExitoso = true;
         }
       }
 
+      // 5. Login correcto
       if (loginExitoso) {
         const registro = data[0];
-        
-        // Guardar sesión activa del equipo
-        localStorage.setItem("Usuario", userInput);
-        localStorage.setItem("EquipoPrin", registro.columna4 || registro.columna3 || "");
 
+        // Guardar usuario y equipo
+        localStorage.setItem("Usuario", userInput);
+
+        localStorage.setItem(
+          "EquipoPrin",
+          registro.columna4 || registro.columna3 || ""
+        );
+
+        // NUEVO: activar la sesión para acceder al menú
+        sessionStorage.setItem(
+          "rvb_sesion_activa",
+          "true"
+        );
+
+        // Mantener RPE como página inicial
         window.location.href = "RPE.html";
+
       } else {
         alert("Verifica tus credenciales");
-        if (btnEnter) btnEnter.disabled = false;
+
+        if (btnEnter) {
+          btnEnter.disabled = false;
+        }
       }
 
     } catch (error) {
-      console.error("Error en la autenticación:", error);
-      alert("Error de conexión al verificar credenciales.");
-      if (btnEnter) btnEnter.disabled = false;
+      console.error(
+        "Error en la autenticación:",
+        error
+      );
+
+      alert(
+        "Error de conexión al verificar credenciales."
+      );
+
+      if (btnEnter) {
+        btnEnter.disabled = false;
+      }
     }
   });
 });
