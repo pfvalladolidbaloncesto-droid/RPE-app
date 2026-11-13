@@ -4,30 +4,479 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#007bff">
+  <title>Entrenamiento de fuerza - RV Baloncesto</title>
+  <link rel="manifest" href="manifest.json">
 
-  <title>Registro de fuerza - RV Baloncesto</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont,
+        "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 15px;
+      background: #f4f6f8;
+      color: #27323d;
+    }
+
+    .container {
+      position: relative;
+      max-width: 550px;
+      margin: 0 auto;
+      padding: 17px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px #00000012;
+    }
+
+    h2 {
+      margin: 0 30px 12px;
+      color: #263a50;
+      text-align: center;
+      font-size: 21px;
+    }
+
+    .subtitulo {
+      margin: 0 0 18px;
+      text-align: center;
+      color: #617284;
+      font-size: 13px;
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 14px;
+      left: 13px;
+      border: none;
+      padding: 6px 9px;
+      background: none;
+      color: #263a50;
+      font-size: 24px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    .form-group {
+      margin-bottom: 13px;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    select {
+      width: 100%;
+      min-width: 0;
+      padding: 8px;
+      border: 1px solid #cbd4de;
+      border-radius: 5px;
+      color: #26384a;
+      background: #fff;
+      font-size: 14px;
+    }
+
+    input[readonly],
+    input:disabled {
+      background: #e9eef3 !important;
+      color: #607080;
+      opacity: 1;
+    }
+
+    input[type="checkbox"],
+    input[type="range"] {
+      accent-color: #147ec7;
+    }
+
+    button {
+      min-height: 42px;
+      border: none;
+      padding: 10px 13px;
+      border-radius: 6px;
+      background: #007bff;
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:active {
+      filter: brightness(.9);
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    .btn-secundario {
+      background: #eaf0f5;
+      border: 1px solid #cbd4de;
+      color: #26384a;
+    }
+
+    .btn-fin {
+      background: #d74c4c;
+    }
+
+    .info {
+      color: #6c7e8d;
+      font-size: 12px;
+    }
+
+    .card {
+      margin-bottom: 14px;
+      padding: 12px;
+      border: 1px solid #dce3e9;
+      background: #fafbfc;
+      border-radius: 7px;
+    }
+
+    .vbt-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .vbt-line label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin: 0;
+    }
+
+    .timer-card {
+      margin: 12px 0;
+      padding: 12px;
+      text-align: center;
+      background: #edf2f6;
+      border-radius: 7px;
+      font-size: 18px;
+      font-weight: 750;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .slider-row input[type="range"] {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .slider-row input[type="text"] {
+      width: 62px;
+      text-align: center;
+    }
+
+    .results-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .results-row label {
+      font-size: 12px;
+    }
+
+    .results-row input {
+      text-align: center;
+    }
+
+    .series-table {
+      width: 100%;
+      overflow-x: auto;
+      margin-top: 10px;
+    }
+
+    .grid-header,
+    .grid-8col {
+      display: grid;
+      grid-template-columns:
+        24px 20px repeat(6, minmax(42px, 1fr));
+      gap: 4px;
+      align-items: center;
+      min-width: 365px;
+    }
+
+    .grid-header {
+      padding: 3px 5px;
+      color: #526474;
+      font-size: 11px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .serie-row {
+      padding: 7px 5px;
+      margin: 5px 0;
+      border: 1px solid #e0e6ed;
+      border-radius: 5px;
+      background: #fafafa;
+    }
+
+    .serie-row.disabled {
+      opacity: .38;
+    }
+
+    .grid-8col b {
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .grid-8col input[type="checkbox"] {
+      margin: 0 auto;
+    }
+
+    .grid-8col input[type="text"] {
+      width: 100%;
+      min-width: 0;
+      padding: 6px 1px;
+      text-align: center;
+      font-size: 11px;
+    }
+
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      margin-top: 13px;
+    }
+
+    .button-group-inline {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .estado-envio {
+      margin: 10px 0 0;
+      color: #3d576d;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    hr {
+      border: 0;
+      border-top: 1px solid #e1e6eb;
+      margin: 16px 0 12px;
+    }
+
+    @media (max-width: 380px) {
+      body {
+        padding: 8px;
+      }
+
+      .container {
+        padding: 11px;
+      }
+
+      .button-group-inline button {
+        font-size: 12px;
+        padding: 8px 5px;
+      }
+    }
+  </style>
 </head>
 
 <body>
-  <main class="form-container">
+  <main class="container">
 
-    <h2>Registro de fuerza</h2>
+    <button
+      type="button"
+      id="btnVolverMenu"
+      class="back-btn"
+      aria-label="Volver al menú"
+    >
+      &larr;
+    </button>
 
-    <p>
-      Esta página se creará a continuación.
-      El formulario de fuerza todavía no está conectado.
+    <h2>Entrenamiento de fuerza</h2>
+
+    <p class="subtitulo">
+      <span id="nombreJugador"></span>
+      · RV Baloncesto
     </p>
 
-    <div class="button-group">
-      <button
-        type="button"
-        onclick="window.location.href='menu_opciones.html'"
-      >
-        Volver al menú
-      </button>
+    <div class="form-group">
+      <label for="fechaRegistro">Fecha</label>
+      <input type="date" id="fechaRegistro">
     </div>
 
+    <div class="form-group">
+      <label for="buscadorEjercicio">
+        Seleccionar ejercicio
+      </label>
+
+      <input
+        type="text"
+        id="buscadorEjercicio"
+        placeholder="Buscar entre los ejercicios guardados..."
+      >
+
+      <select
+        id="listPicker1"
+        style="margin-top:6px"
+      ></select>
+    </div>
+
+    <div class="form-group">
+      <label for="ejercicio">Ejercicio</label>
+
+      <input
+        type="text"
+        id="ejercicio"
+        placeholder="Escribe o selecciona el ejercicio"
+      >
+    </div>
+
+    <div class="form-group">
+      <button
+        type="button"
+        id="consultar"
+        class="btn-secundario"
+        disabled
+        style="width:100%"
+      >
+        Consultar últimos entrenamientos · Próximamente
+      </button>
+
+      <p class="info">
+        El historial se conectará cuando preparemos
+        la consulta de RVB.
+      </p>
+    </div>
+
+    <div class="card vbt-line">
+      <label for="vbt">
+        <input type="checkbox" id="vbt">
+        Modo VBT
+      </label>
+
+      <span class="info">
+        Int → MVP / RIR → VL
+      </span>
+    </div>
+
+    <div class="timer-card">
+      Tiempo de descanso:
+      <span id="minutos">0</span>:<span id="segundos">00</span>
+    </div>
+
+    <div class="card">
+      <label for="slider1">
+        Cálculo de carga (% del RM estimado de esta sesión)
+      </label>
+
+      <div class="slider-row">
+        <input
+          type="range"
+          id="slider1"
+          min="0"
+          max="100"
+          value="50"
+        >
+
+        <input
+          type="text"
+          id="percentage"
+          value="50%"
+          readonly
+        >
+      </div>
+
+      <div class="results-row">
+        <div>
+          <label for="rmRef">RM Ref. (kg)</label>
+          <input type="text" id="rmRef" readonly>
+        </div>
+
+        <div>
+          <label for="rmResultKg">Carga calculada</label>
+          <input type="text" id="rmResultKg" readonly>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <label>Series</label>
+
+    <div class="series-table">
+      <div class="grid-header">
+        <span>Set</span>
+        <span>Nº</span>
+        <span>Kg</span>
+        <span id="cabeceraInt">Int</span>
+        <span>Reps</span>
+        <span id="cabeceraRir">RIR</span>
+        <span>R'</span>
+        <span>RM</span>
+      </div>
+
+      <div id="seriesContainer"></div>
+    </div>
+
+    <div
+      class="form-group"
+      style="margin-top:14px"
+    >
+      <label for="textBox1">
+        Observaciones
+      </label>
+
+      <input
+        type="text"
+        id="textBox1"
+        placeholder="Observaciones del ejercicio"
+      >
+    </div>
+
+    <div class="button-group">
+
+      <button type="button" id="enviar">
+        Enviar registro
+      </button>
+
+      <div class="button-group-inline">
+
+        <button
+          type="button"
+          id="nuevoEjercicio"
+          class="btn-secundario"
+        >
+          Nuevo ejercicio
+        </button>
+
+        <button
+          type="button"
+          id="fin"
+          class="btn-fin"
+        >
+          Finalizar entrenamiento
+        </button>
+
+      </div>
+    </div>
+
+    <p
+      id="estadoEnvio"
+      class="estado-envio"
+      role="status"
+      aria-live="polite"
+    ></p>
+
   </main>
+
+  <script src="EntrenamientoFuerza.js?v=1"></script>
 </body>
 </html>
