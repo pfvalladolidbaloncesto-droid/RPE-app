@@ -3,31 +3,308 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#007bff">
 
-  <title>Rendimiento de fuerza - RV Baloncesto</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Consultar rendimiento de fuerza - RVB</title>
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont,
+        "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 15px;
+      background: #f4f6f8;
+      color: #26384a;
+    }
+
+    .container {
+      max-width: 780px;
+      margin: auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px #00000012;
+    }
+
+    .cabecera {
+      position: relative;
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    h1 {
+      margin: 0 35px 6px;
+      font-size: 23px;
+    }
+
+    #jugador {
+      color: #65778c;
+      font-size: 13px;
+    }
+
+    .volver {
+      position: absolute;
+      top: 0;
+      left: 0;
+      border: 0;
+      background: transparent;
+      color: #26384a;
+      font-size: 24px;
+      padding: 0 6px;
+      cursor: pointer;
+    }
+
+    .filtros {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr;
+      gap: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    select,
+    input[type="date"] {
+      width: 100%;
+      min-height: 43px;
+      min-width: 0;
+      border: 1px solid #cbd4de;
+      border-radius: 6px;
+      background: #fff;
+      padding: 8px;
+      font-size: 14px;
+      color: #27384a;
+    }
+
+    .acciones {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    button {
+      cursor: pointer;
+      border: 0;
+      border-radius: 6px;
+      min-height: 46px;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    button:disabled {
+      cursor: wait;
+      opacity: .65;
+    }
+
+    .principal {
+      background: #007bff;
+      color: #fff;
+    }
+
+    .secundario {
+      background: #e9f1fa;
+      border: 1px solid #bfcfdf;
+      color: #20405e;
+    }
+
+    .resultado {
+      min-height: 255px;
+      border: 1px solid #dce4eb;
+      border-radius: 9px;
+      padding: 15px;
+      background: #fafbfc;
+    }
+
+    .resultado h2 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+
+    .mensaje {
+      color: #607286;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .grafica-scroll {
+      overflow-x: auto;
+      width: 100%;
+      background: white;
+      border: 1px solid #e5eaf0;
+      border-radius: 7px;
+    }
+
+    .grafica-scroll svg {
+      display: block;
+      max-width: none;
+    }
+
+    .tabla-scroll {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      font-size: 13px;
+    }
+
+    th, td {
+      padding: 11px;
+      border-bottom: 1px solid #e0e6ed;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    th {
+      background: #edf2f7;
+    }
+
+    td.fecha {
+      white-space: nowrap;
+      width: 112px;
+      font-weight: 600;
+    }
+
+    td.detalle {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      line-height: 1.6;
+    }
+
+    .nota {
+      color: #64788a;
+      font-size: 12px;
+      margin: 12px 0 0;
+    }
+
+    @media (max-width: 560px) {
+      body {
+        padding: 8px;
+      }
+
+      .container {
+        padding: 14px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      .filtros {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .filtros > div:first-child {
+        grid-column: 1 / -1;
+      }
+
+      .acciones {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 
 <body>
-  <main class="form-container">
+  <main class="container">
 
-    <h2>Rendimiento de fuerza</h2>
-
-    <p>
-      Esta página se desarrollará después
-      del registro de fuerza.
-    </p>
-
-    <div class="button-group">
+    <header class="cabecera">
       <button
+        class="volver"
+        id="volverMenu"
         type="button"
-        onclick="window.location.href='menu_opciones.html'"
+        aria-label="Volver al menú"
       >
-        Volver al menú
+        ←
       </button>
+
+      <h1>Consultar rendimiento de fuerza</h1>
+
+      <span id="jugador"></span>
+    </header>
+
+    <div class="filtros">
+
+      <div>
+        <label for="ejercicioConsulta">Ejercicio</label>
+
+        <select id="ejercicioConsulta">
+          <option value="">Cargando ejercicios...</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="fechaConsulta">Fecha</label>
+
+        <input
+          id="fechaConsulta"
+          type="date"
+        >
+      </div>
+
+      <div>
+        <label for="diasConsulta">Últimos X días</label>
+
+        <select id="diasConsulta">
+          <option value="">Todos</option>
+          <option value="7">7</option>
+          <option value="14">14</option>
+          <option value="30">30</option>
+          <option value="90">90</option>
+          <option value="180">180</option>
+          <option value="365">365</option>
+        </select>
+      </div>
+
     </div>
 
+    <div class="acciones">
+
+      <button
+        type="button"
+        id="btnRendimiento"
+        class="principal"
+      >
+        Consultar rendimiento
+      </button>
+
+      <button
+        type="button"
+        id="btnEntrenamiento"
+        class="secundario"
+      >
+        Consultar entrenamiento
+      </button>
+
+    </div>
+
+    <section
+      id="resultados"
+      class="resultado"
+      aria-live="polite"
+    >
+      <p class="mensaje">
+        Selecciona un ejercicio y pulsa uno de los
+        botones para ver sus registros.
+      </p>
+    </section>
+
   </main>
+
+  <script src="ConsultarRendimientoFuerza.js?v=1"></script>
 </body>
 </html>
