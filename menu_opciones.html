@@ -5,7 +5,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#007bff">
+
   <title>Menú de opciones - RV Baloncesto</title>
+
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
 
@@ -17,7 +19,7 @@
       padding: 24px 20px;
       background: #fff;
       border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.10);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.10);
       box-sizing: border-box;
       text-align: center;
     }
@@ -96,6 +98,7 @@
 
 <body>
   <main class="menu-container">
+
     <img
       class="menu-logo"
       src="RV-Baloncesto-header-1.png"
@@ -108,15 +111,17 @@
       Selecciona una opción para continuar
     </p>
 
-    <nav class="menu-buttons"
-         aria-label="Opciones de entrenamiento">
+    <nav
+      class="menu-buttons"
+      aria-label="Opciones de entrenamiento"
+    >
 
       <button type="button" id="btnRPE">
         Registrar RPE
       </button>
 
       <button type="button" id="btnFuerza">
-        Entrenamiento de fuerza
+        Registrar entrenamiento de fuerza
       </button>
 
       <button type="button" id="btnRendimiento">
@@ -139,13 +144,15 @@
       >
         Cerrar sesión
       </button>
+
     </nav>
 
     <p class="menu-footer">
       RV Baloncesto · Seguimiento del entrenamiento
     </p>
+
   </main>
 
-  <script src="menu_opciones.js?v=1"></script>
+  <script src="menu_opciones.js?v=2"></script>
 </body>
 </html>
