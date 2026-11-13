@@ -1,16 +1,20 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>RPE - Registro</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <main class="form-container">
     <h2>Registro</h2>
 
     <form id="rpeForm" novalidate>
+
       <div class="form-group">
         <label for="fecha">Fecha</label>
         <input type="date" id="fecha" required>
@@ -18,11 +22,17 @@
 
       <div class="form-group">
         <label for="nombre">Nombre</label>
-        <input type="text" id="nombre" required readonly>
+        <input
+          type="text"
+          id="nombre"
+          required
+          readonly
+        >
       </div>
 
       <div class="form-group">
         <label for="equiposel">Equipo</label>
+
         <select id="equiposel" required>
           <option value="">-- Seleccionar --</option>
           <option value="Infantil B">Infantil B</option>
@@ -38,7 +48,10 @@
       </div>
 
       <div class="form-group">
-        <label for="entrenamiento">Entrenamiento</label>
+        <label for="entrenamiento">
+          Entrenamiento
+        </label>
+
         <select id="entrenamiento" required>
           <option value="">-- Seleccionar --</option>
           <option value="Físico">Físico</option>
@@ -47,18 +60,37 @@
       </div>
 
       <div class="form-group">
-        <label for="rpe">RPE (0-10): <span id="rpeValue">5</span></label>
-        <input type="range" id="rpe" name="rpe" min="0" max="10" step="1" value="5" class="rpe-slider">
+
+        <label for="rpe">
+          RPE (0-10):
+          <span id="rpeValue">5</span>
+        </label>
+
+        <input
+          type="range"
+          id="rpe"
+          name="rpe"
+          min="0"
+          max="10"
+          step="1"
+          value="5"
+          class="rpe-slider"
+        >
+
         <div class="slider-labels">
           <span>0 (Descanso / Mínimo)</span>
           <span>10 (Esfuerzo Máximo)</span>
         </div>
+
       </div>
 
       <div class="form-group">
         <label for="estatus">Estatus</label>
+
         <select id="estatus" required>
-          <option value="Completo" selected>Completo</option>
+          <option value="Completo" selected>
+            Completo
+          </option>
           <option value="Limitado">Limitado</option>
           <option value="Lesionado">Lesionado</option>
           <option value="Ausente">Ausente</option>
@@ -70,11 +102,21 @@
         <textarea id="comentarios" rows="3"></textarea>
       </div>
 
-      <button type="submit" id="btnEnviar">Enviar</button>
-      <button type="button" id="btnFunciones" class="btn-secondary" disabled>Menú de opciones</button>
+      <button type="submit" id="btnEnviar">
+        Enviar
+      </button>
+
+      <button
+        type="button"
+        id="btnFunciones"
+        class="btn-secondary"
+      >
+        Menú de opciones
+      </button>
+
     </form>
   </main>
 
-  <script src="RPE.js?v=4"></script>
+  <script src="RPE.js?v=6"></script>
 </body>
 </html>
