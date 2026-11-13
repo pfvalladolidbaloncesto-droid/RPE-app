@@ -1,0 +1,151 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#007bff">
+  <title>Menú de opciones - RV Baloncesto</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    .menu-container {
+      width: 90%;
+      max-width: 420px;
+      margin: 24px auto;
+      padding: 24px 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.10);
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    .menu-logo {
+      display: block;
+      max-width: 100%;
+      width: 180px;
+      max-height: 140px;
+      object-fit: contain;
+      margin: 0 auto 12px;
+    }
+
+    .menu-container h1 {
+      margin: 0 0 8px;
+      font-size: 1.4rem;
+      color: #26384a;
+    }
+
+    .menu-subtitle {
+      margin: 0 0 24px;
+      line-height: 1.5;
+      color: #607080;
+      font-size: 0.95rem;
+    }
+
+    .menu-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .menu-buttons button {
+      width: 100%;
+      min-height: 52px;
+      padding: 13px 16px;
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 7px;
+      box-sizing: border-box;
+    }
+
+    .menu-buttons button:focus-visible {
+      outline: 3px solid #203d74;
+      outline-offset: 3px;
+    }
+
+    .menu-buttons button:disabled {
+      opacity: 1;
+      background: #e3e7ed;
+      color: #687583;
+      cursor: not-allowed;
+    }
+
+    .menu-buttons button:disabled:hover {
+      background: #e3e7ed;
+    }
+
+    .menu-buttons .logout-button {
+      margin-top: 8px;
+      background: #56616c;
+    }
+
+    .menu-buttons .logout-button:hover {
+      background: #404b55;
+    }
+
+    .menu-footer {
+      margin: 16px 0 0;
+      font-size: 0.78rem;
+      color: #7b8792;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="menu-container">
+    <img
+      class="menu-logo"
+      src="RV-Baloncesto-header-1.png"
+      alt="RV Baloncesto"
+    >
+
+    <h1>Menú de opciones</h1>
+
+    <p class="menu-subtitle" id="saludoUsuario">
+      Selecciona una opción para continuar
+    </p>
+
+    <nav class="menu-buttons"
+         aria-label="Opciones de entrenamiento">
+
+      <button type="button" id="btnRPE">
+        Registrar RPE
+      </button>
+
+      <button type="button" id="btnFuerza">
+        Entrenamiento de fuerza
+      </button>
+
+      <button type="button" id="btnRendimiento">
+        Consultar rendimiento de fuerza
+      </button>
+
+      <button
+        type="button"
+        id="btnTest"
+        disabled
+        aria-disabled="true"
+      >
+        Consultar test · Próximamente
+      </button>
+
+      <button
+        type="button"
+        id="btnLogout"
+        class="logout-button"
+      >
+        Cerrar sesión
+      </button>
+    </nav>
+
+    <p class="menu-footer">
+      RV Baloncesto · Seguimiento del entrenamiento
+    </p>
+  </main>
+
+  <script src="menu_opciones.js?v=1"></script>
+</body>
+</html>
