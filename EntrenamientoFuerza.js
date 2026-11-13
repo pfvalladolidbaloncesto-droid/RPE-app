@@ -1,13 +1,7 @@
 
-// ================================================
-// REGISTRO DE FUERZA - RV BALONCESTO
-// ================================================
-
-// Nuevo Google Form de RVB
 const FORM_RESPONSE_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSdlXoK_igArw20URYqD4AA5-Jjdrlcr25rdfXAJr2F2xkEOOw/formResponse";
 
-// IDs del enlace prerrellenado proporcionado
 const CAMPOS = {
   usuario: "entry.1052562463",
   fecha: "entry.2002526298",
@@ -71,7 +65,26 @@ const CAMPOS = {
 };
 
 // ================================================
-// VARIABLES GLOBALES
+// CATÁLOGO FIJO DE EJERCICIOS
+// ================================================
+
+const EJERCICIOS_BASE = [
+  "BENCH PRESS",
+  "SQUAT",
+  "DEADLIFT",
+  "PULL-UP",
+  "ROW",
+  "MILITAR PRESS",
+  "ROMANIAN DEADLIFT",
+  "HIP THRUST",
+  "BULGARIAN SPLIT SQUAT",
+  "INCLINE BENCH PRESS",
+  "LAT PULLDOWN",
+  "LUNGE"
+];
+
+// ================================================
+// VARIABLES
 // ================================================
 
 let inicioDescanso = 0;
@@ -88,8 +101,8 @@ const numero = id =>
   Number(valor(id).replace(",", "."));
 
 const texto = (id, contenido) => {
-  const el = $(id);
-  if (el) el.textContent = contenido;
+  const elemento = $(id);
+  if (elemento) elemento.textContent = contenido;
 };
 
 const usuarioActual = () =>
@@ -99,7 +112,7 @@ const usuarioActual = () =>
 
 const modoVBT = () => $("vbt").checked;
 
-const fechaLocal = () => {
+function fechaLocal() {
   const f = new Date();
 
   return [
@@ -107,7 +120,7 @@ const fechaLocal = () => {
     String(f.getMonth() + 1).padStart(2, "0"),
     String(f.getDate()).padStart(2, "0")
   ].join("-");
-};
+}
 
 // ================================================
 // INICIALIZACIÓN
@@ -250,9 +263,11 @@ function enlazarEventos() {
     actualizarPorcentaje
   );
 
-  // CAMBIO ENTRE FUERZA CONVENCIONAL Y VBT
+  // CAMBIAR ENTRE MODO CONVENCIONAL Y VBT
   $("vbt").addEventListener("change", () => {
 
+    // Limpiar campos cuyo significado cambia
+    // y todos los valores anteriores de RM.
     for (let n = 1; n <= 6; n++) {
       $("i" + n).value = "";
       $("RIR" + n).value = "";
@@ -263,7 +278,7 @@ function enlazarEventos() {
     recalcularTodo();
   });
 
-  // ACTIVAR O DESACTIVAR SERIES
+  // ACTIVAR / DESACTIVAR SERIES
   $("seriesContainer").addEventListener("change", e => {
 
     const coincidencia =
@@ -291,37 +306,39 @@ function enlazarEventos() {
     recalcularTodo();
   });
 
-  // ENTRADA DE VALORES DE LAS SERIES
+  // INTRODUCCIÓN DE DATOS
   $("seriesContainer").addEventListener("input", e => {
 
     if (
       !e.target.matches('input[type="text"]') ||
-      e.target.readOnly
+      e.target.readOnly ||
+      e.target.disabled
     ) return;
 
-    // Admitir decimales con punto o coma
+    // Normalización de números
     e.target.value = e.target.value
       .replace(/,/g, ".")
       .replace(/[^0-9.]/g, "")
       .replace(/(\..*)\./g, "$1");
 
-    const m =
+    const coincidencia =
       /^(kg|i|Rep|RIR|rec)([1-6])$/
         .exec(e.target.id);
 
-    if (!m) return;
+    if (!coincidencia) return;
 
-    const n = Number(m[2]);
+    const n = Number(coincidencia[2]);
 
     if (
       !modoVBT() &&
-      (m[1] === "Rep" || m[1] === "RIR")
+      ["Rep", "RIR"].includes(coincidencia[1])
     ) {
       calcularIntensidad(n);
     }
 
     if (
-      ["kg", "i", "Rep", "RIR"].includes(m[1])
+      ["kg", "i", "Rep", "RIR"]
+        .includes(coincidencia[1])
     ) {
       calcularRM(n);
     }
@@ -329,7 +346,7 @@ function enlazarEventos() {
 }
 
 // ================================================
-// ESTADO DE LAS SERIES
+// ESTADOS DE LAS SERIES
 // ================================================
 
 function actualizarSeries() {
@@ -342,7 +359,8 @@ function actualizarSeries() {
   for (let n = 1; n <= 6; n++) {
 
     const habilitada =
-      n === 1 || $("s" + (n - 1)).checked;
+      n === 1 ||
+      $("s" + (n - 1)).checked;
 
     const check = $("s" + n);
 
@@ -357,7 +375,8 @@ function actualizarSeries() {
       !habilitada
     );
 
-    const activa = habilitada && check.checked;
+    const activa =
+      habilitada && check.checked;
 
     for (
       const prefijo of
@@ -366,13 +385,22 @@ function actualizarSeries() {
 
       const campo = $(prefijo + n);
 
-      campo.disabled = !activa;
+      // NUEVO:
+      // En modo VBT el campo RM queda bloqueado
+      // aunque la serie esté activa.
+      campo.disabled =
+        !activa ||
+        (vbt && prefijo === "rm");
 
       campo.readOnly =
         prefijo === "rm" ||
         (prefijo === "i" && !vbt);
 
-      if (!activa) {
+      // Vaciar los RM cuando está activo VBT
+      if (
+        !activa ||
+        (vbt && prefijo === "rm")
+      ) {
         campo.value = "";
       }
     }
@@ -403,11 +431,7 @@ function calcularIntensidad(n) {
   const rir = valor("RIR" + n);
 
   $("i" + n).value =
-    reps !== "" &&
-    rir !== "" &&
-    Number.isFinite(
-      numero("Rep" + n) + numero("RIR" + n)
-    )
+    reps !== "" && rir !== ""
       ? String(
           numero("Rep" + n) +
           numero("RIR" + n)
@@ -421,42 +445,40 @@ function calcularIntensidad(n) {
 
 function calcularRM(n) {
 
-  if (!$("s" + n).checked) return;
+  const campoRM = $("rm" + n);
 
-  let estimacion = NaN;
+  // NUEVO: DESACTIVAR EL RM EN MODO VBT
+  if (modoVBT()) {
+
+    campoRM.value = "";
+    campoRM.disabled = true;
+
+    actualizarMaximoRM();
+    return;
+  }
+
+  // Comprobar datos en modo convencional
+  if (
+    !$("s" + n).checked ||
+    !valor("kg" + n) ||
+    !valor("i" + n)
+  ) {
+
+    campoRM.value = "";
+    actualizarMaximoRM();
+    return;
+  }
 
   const kg = numero("kg" + n);
   const intensidad = numero("i" + n);
 
-  if (
-    valor("kg" + n) &&
-    valor("i" + n) &&
-    kg > 0 &&
-    intensidad > 0
-  ) {
+  // Fórmula original de RM convencional
+  const estimacion =
+    kg > 0 && intensidad > 0
+      ? kg * Math.pow(intensidad, 0.1)
+      : NaN;
 
-    if (modoVBT()) {
-
-      // ECUACIÓN GENERAL PROVISIONAL
-      // No utiliza el perfil individual del jugador
-
-      const denominador =
-        1.12 - 0.7 * intensidad;
-
-      if (denominador > 0) {
-        estimacion = kg / denominador;
-      }
-
-    } else {
-
-      // Fórmula de la PWA personal original
-
-      estimacion =
-        kg * Math.pow(intensidad, 0.1);
-    }
-  }
-
-  $("rm" + n).value =
+  campoRM.value =
     Number.isFinite(estimacion) &&
     estimacion > 0
       ? estimacion.toFixed(2)
@@ -478,10 +500,31 @@ function recalcularTodo() {
 }
 
 // ================================================
-// CÁLCULO DE CARGA SEGÚN % RM
+// RM MÁXIMO Y PORCENTAJES
 // ================================================
 
 function actualizarMaximoRM() {
+
+  // NUEVO: BLOQUEAR TAMBIÉN EL CÁLCULO
+  // DE CARGA PORCENTUAL CUANDO VBT ESTÁ ACTIVO.
+  if (modoVBT()) {
+
+    $("rmRef").value = "";
+    $("rmResultKg").value = "";
+
+    $("rmRef").disabled = true;
+    $("rmResultKg").disabled = true;
+    $("slider1").disabled = true;
+
+    $("percentage").value = "";
+
+    return;
+  }
+
+  // MODO CONVENCIONAL
+  $("rmRef").disabled = false;
+  $("rmResultKg").disabled = false;
+  $("slider1").disabled = false;
 
   let max = 0;
 
@@ -503,6 +546,15 @@ function actualizarMaximoRM() {
 
 function actualizarPorcentaje() {
 
+  // No calcular porcentajes en VBT
+  if (modoVBT()) {
+
+    $("percentage").value = "";
+    $("rmResultKg").value = "";
+
+    return;
+  }
+
   const porcentaje =
     Number($("slider1").value);
 
@@ -514,7 +566,8 @@ function actualizarPorcentaje() {
 
   $("rmResultKg").value =
     rm > 0
-      ? (rm * porcentaje / 100).toFixed(1) + " kg"
+      ? (rm * porcentaje / 100)
+          .toFixed(1) + " kg"
       : "";
 }
 
@@ -554,7 +607,7 @@ function iniciarDescanso() {
 }
 
 // ================================================
-// LISTA LOCAL DE EJERCICIOS
+// CATÁLOGO DE EJERCICIOS
 // ================================================
 
 function claveEjercicios() {
@@ -565,20 +618,59 @@ function claveEjercicios() {
 
 function cargarEjercicios() {
 
+  let personalizados = [];
+
   try {
 
     const datos = JSON.parse(
-      localStorage.getItem(claveEjercicios()) || "[]"
+      localStorage.getItem(
+        claveEjercicios()
+      ) || "[]"
     );
 
-    listaEjercicios = Array.isArray(datos)
-      ? datos.filter(x => typeof x === "string")
+    personalizados = Array.isArray(datos)
+      ? datos.filter(
+          x =>
+            typeof x === "string" &&
+            x.trim()
+        )
       : [];
 
-  } catch {
+  } catch (error) {
 
-    listaEjercicios = [];
+    console.warn(
+      "No se pudo leer la lista de ejercicios",
+      error
+    );
   }
+
+  // Combinar catálogo fijo y ejercicios personales.
+  // Eliminar nombres duplicados.
+  const unicos = new Map();
+
+  [
+    ...EJERCICIOS_BASE,
+    ...personalizados
+  ].forEach(ejercicio => {
+
+    const limpio = ejercicio.trim();
+
+    const clave =
+      limpio.toLocaleLowerCase("es");
+
+    if (
+      limpio &&
+      !unicos.has(clave)
+    ) {
+      unicos.set(clave, limpio);
+    }
+  });
+
+  listaEjercicios = [...unicos.values()];
+
+  listaEjercicios.sort(
+    (a, b) => a.localeCompare(b, "es")
+  );
 
   renderSelector("");
 }
@@ -588,16 +680,13 @@ function renderSelector(filtro) {
   const picker = $("listPicker1");
 
   picker.replaceChildren(
-    new Option(
-      "Seleccionar ejercicio guardado",
-      ""
-    )
+    new Option("Seleccionar ejercicio", "")
   );
 
   listaEjercicios
     .filter(e =>
-      e.toLowerCase().includes(
-        filtro.toLowerCase()
+      e.toLocaleLowerCase("es").includes(
+        filtro.toLocaleLowerCase("es")
       )
     )
     .forEach(e => {
@@ -609,21 +698,37 @@ function renderSelector(filtro) {
 
 function guardarEjercicio(ejercicio) {
 
-  if (
-    !listaEjercicios.some(
-      e => e.toLowerCase() === ejercicio.toLowerCase()
-    )
-  ) {
+  const limpio = ejercicio.trim();
 
-    listaEjercicios.push(ejercicio);
+  if (!limpio) return;
+
+  const yaExiste = listaEjercicios.some(
+    e =>
+      e.toLocaleLowerCase("es") ===
+      limpio.toLocaleLowerCase("es")
+  );
+
+  if (!yaExiste) {
+
+    listaEjercicios.push(limpio);
 
     listaEjercicios.sort(
       (a, b) => a.localeCompare(b, "es")
     );
 
+    // Guardar únicamente los ejercicios extra.
+    // Los básicos ya están en el código.
+    const personalizados =
+      listaEjercicios.filter(e =>
+        !EJERCICIOS_BASE.some(base =>
+          base.toLocaleLowerCase("es") ===
+          e.toLocaleLowerCase("es")
+        )
+      );
+
     localStorage.setItem(
       claveEjercicios(),
-      JSON.stringify(listaEjercicios)
+      JSON.stringify(personalizados)
     );
   }
 
@@ -663,6 +768,7 @@ function limpiarFormulario() {
   actualizarSeries();
 
   $("slider1").value = 50;
+
   actualizarMaximoRM();
 
   clearInterval(intervaloDescanso);
@@ -678,7 +784,7 @@ function limpiarFormulario() {
 }
 
 // ================================================
-// VALIDACIÓN
+// VALIDACIÓN DEL REGISTRO
 // ================================================
 
 function revisarRegistro() {
@@ -695,11 +801,10 @@ function revisarRegistro() {
     return "Selecciona o escribe un ejercicio.";
   }
 
-  const activas =
-    Array.from(
-      { length: 6 },
-      (_, i) => i + 1
-    ).filter(n => $("s" + n).checked);
+  const activas = Array.from(
+    { length: 6 },
+    (_, i) => i + 1
+  ).filter(n => $("s" + n).checked);
 
   if (!activas.length) {
     return "Activa al menos una serie.";
@@ -728,6 +833,9 @@ function revisarRegistro() {
 
     if (modoVBT()) {
 
+      // NUEVO:
+      // En modo VBT no se exige ningún RM.
+      // Solo la velocidad registrada.
       if (
         !valor("i" + n) ||
         !Number.isFinite(numero("i" + n)) ||
@@ -745,10 +853,10 @@ function revisarRegistro() {
       ) {
         return `Comprueba el RIR de la serie ${n}.`;
       }
-    }
 
-    if (!valor("rm" + n)) {
-      return `No se puede estimar el RM de la serie ${n}; revisa sus datos.`;
+      if (!valor("rm" + n)) {
+        return `No se puede estimar el RM de la serie ${n}; revisa sus datos.`;
+      }
     }
   }
 
@@ -756,7 +864,7 @@ function revisarRegistro() {
 }
 
 // ================================================
-// ENVÍO AL NUEVO GOOGLE FORM DE RVB
+// ENVÍO A GOOGLE FORMS
 // ================================================
 
 function enviarFormulario() {
@@ -772,7 +880,6 @@ function enviarFormulario() {
     return;
   }
 
-  // Datos generales
   const datos = {
 
     [CAMPOS.usuario]:
@@ -795,7 +902,9 @@ function enviarFormulario() {
   for (let i = 0; i < 6; i++) {
 
     const n = i + 1;
-    const activa = $("s" + n).checked;
+
+    const activa =
+      $("s" + n).checked;
 
     for (
       const [grupo, prefijo] of [
@@ -808,8 +917,14 @@ function enviarFormulario() {
       ]
     ) {
 
+      // NUEVO:
+      // Los campos RM se envían obligatoriamente
+      // vacíos cuando VBT está activo.
       datos[CAMPOS[grupo][i]] =
-        activa ? valor(prefijo + n) : "";
+        activa &&
+        !(modoVBT() && grupo === "rm")
+          ? valor(prefijo + n)
+          : "";
     }
   }
 
@@ -818,8 +933,9 @@ function enviarFormulario() {
     enviando = true;
     $("enviar").disabled = true;
 
-    // Iframe oculto para enviar a Google Forms
-    const marco = document.createElement("iframe");
+    // Crear iframe oculto
+    const marco =
+      document.createElement("iframe");
 
     marco.name =
       "rvb_form_oculto_" + Date.now();
@@ -828,7 +944,7 @@ function enviarFormulario() {
 
     document.body.appendChild(marco);
 
-    // Formulario temporal
+    // Formulario temporal para Google Forms
     const formulario =
       document.createElement("form");
 
@@ -852,13 +968,10 @@ function enviarFormulario() {
 
     document.body.appendChild(formulario);
 
-    // Enviar datos
     formulario.submit();
-
-    // Eliminar formulario temporal
     formulario.remove();
 
-    // Guardar ejercicio localmente
+    // Guardar nombre del ejercicio en el dispositivo
     guardarEjercicio(valor("ejercicio"));
 
     texto(
@@ -868,7 +981,7 @@ function enviarFormulario() {
       "esta pantalla no puede confirmar su recepción."
     );
 
-    // Evitar pulsaciones duplicadas inmediatas
+    // Evitar doble envío inmediato
     setTimeout(() => {
 
       enviando = false;
@@ -877,17 +990,16 @@ function enviarFormulario() {
 
     }, 6000);
 
-  } catch (error) {
+  } catch (errorEnvio) {
 
     console.error(
       "Error al intentar enviar:",
-      error
+      errorEnvio
     );
 
     texto(
       "estadoEnvio",
-      "No se ha podido iniciar el envío. " +
-      "Revisa la conexión."
+      "No se ha podido iniciar el envío. Revisa la conexión."
     );
 
     enviando = false;
