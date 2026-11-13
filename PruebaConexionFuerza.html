@@ -1,0 +1,203 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prueba de conexión - RVB</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f4f6f9;
+    }
+
+    main {
+      max-width: 550px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      margin: 12px 0;
+      border: none;
+      border-radius: 6px;
+      background: #0038a8;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .resultado {
+      margin: 12px 0 24px;
+      padding: 15px;
+      border-radius: 6px;
+      background: #eee;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font-size: 14px;
+    }
+
+    .ok {
+      background: #d9f4df;
+    }
+
+    .error {
+      background: #ffe0e0;
+    }
+  </style>
+</head>
+
+<body>
+
+<main>
+
+  <h2>Prueba Apps Script · RVB</h2>
+
+  <p>
+    Comparación de conexión normal y conexión
+    sin credenciales con CORS.
+  </p>
+
+  <button onclick="probar(false)">
+    PRUEBA 1 · JSONP NORMAL
+  </button>
+
+  <div id="resultado1" class="resultado">
+    Sin ejecutar
+  </div>
+
+  <button onclick="probar(true)">
+    PRUEBA 2 · CROSSORIGIN ANONYMOUS
+  </button>
+
+  <div id="resultado2" class="resultado">
+    Sin ejecutar
+  </div>
+
+</main>
+
+<script>
+
+const URL_SCRIPT =
+  "https://script.google.com/macros/s/AKfycbw4pFSJsejB7Q5SaID_ixMWiED5hE7qVf_oSNuZPvOuecm0eCr7wWhYvBamrJ7CS8O6/exec";
+
+let contador = 0;
+
+function probar(anonimo) {
+
+  const id = anonimo
+    ? "resultado2"
+    : "resultado1";
+
+  const resultado = document.getElementById(id);
+
+  resultado.className = "resultado";
+  resultado.textContent = "Conectando...";
+
+  const callback =
+    "rvbEjercicios_" +
+    Date.now() +
+    (++contador);
+
+  const script = document.createElement("script");
+
+  let terminado = false;
+  let temporizador;
+
+  function finalizar(exito, mensaje) {
+
+    if (terminado) return;
+
+    terminado = true;
+
+    clearTimeout(temporizador);
+    script.remove();
+    delete window[callback];
+
+    resultado.className =
+      "resultado " + (exito ? "ok" : "error");
+
+    resultado.textContent = mensaje;
+  }
+
+  // Recibir la respuesta JSONP
+  window[callback] = function(datos) {
+
+    finalizar(
+      datos.ok === true,
+      "RESPUESTA RECIBIDA\n\n" +
+      JSON.stringify(datos, null, 2)
+    );
+  };
+
+  // Detectar error de carga
+  script.onerror = function() {
+
+    finalizar(
+      false,
+      "ERROR DE CONEXIÓN\n\n" +
+      (anonimo
+        ? "La petición anonymous ha fallado. " +
+          "Una posible causa es el bloqueo CORS."
+        : "Chrome no ha podido cargar el script.")
+    );
+  };
+
+  // Tiempo máximo de espera
+  temporizador = setTimeout(function() {
+
+    finalizar(
+      false,
+      "TIEMPO DE ESPERA AGOTADO"
+    );
+
+  }, 15000);
+
+  const url = new URL(URL_SCRIPT);
+
+  url.searchParams.set(
+    "accion",
+    "ejerciciosFuerza"
+  );
+
+  // Nombre de prueba: no devuelve datos personales
+  url.searchParams.set(
+    "nombre",
+    "__PRUEBA_RVB__"
+  );
+
+  url.searchParams.set(
+    "callback",
+    callback
+  );
+
+  url.searchParams.set(
+    "_",
+    Date.now().toString()
+  );
+
+  // DIFERENCIA ENTRE LAS DOS PRUEBAS
+  if (anonimo) {
+    script.crossOrigin = "anonymous";
+  }
+
+  script.src = url.toString();
+
+  document.head.appendChild(script);
+}
+
+</script>
+
+</body>
+</html>
