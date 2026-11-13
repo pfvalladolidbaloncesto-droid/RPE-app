@@ -206,7 +206,7 @@ function consultarEjerciciosRVB(nombre) {
       "_",
       Date.now().toString()
     );
-
+script.crossOrigin = "anonymous";
     script.src = url.toString();
 
     document.head.appendChild(script);
