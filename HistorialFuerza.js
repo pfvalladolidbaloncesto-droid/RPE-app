@@ -12,7 +12,7 @@ No abre ninguna página nueva.
 */
 
 const HISTORIAL_URL =
-  "PEGA_AQUI_LA_URL_DEL_APPS_SCRIPT";
+  "https://script.google.com/macros/s/AKfycbw4pFSJsejB7Q5SaID_ixMWiED5hE7qVf_oSNuZPvOuecm0eCr7wWhYvBamrJ7CS8O6/exec";
 
 let registrosHistorial = [];
 let indiceHistorial = 0;
