@@ -346,7 +346,7 @@ function llamarAPI(accion, parametros, prefijo) {
 
     url.searchParams.set("callback", callback);
     url.searchParams.set("_", String(Date.now()));
-
+script.crossOrigin = "anonymous";
     script.src = url.toString();
 
     document.head.appendChild(script);
