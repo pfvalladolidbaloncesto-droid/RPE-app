@@ -1,7 +1,7 @@
 /* RVB · Consultar test. Google Apps Script independiente. */
 
 // Pega aquí la URL /exec de la implementación de CONSULTAS DE TEST.
-const URL_APPS_SCRIPT_TESTS = "PEGA_AQUI_LA_URL_EXEC_DE_CONSULTAS_TESTS";
+const URL_APPS_SCRIPT_TESTS = "https://script.google.com/macros/s/AKfycbw4pFSJsejB7Q5SaID_ixMWiED5hE7qVf_oSNuZPvOuecm0eCr7wWhYvBamrJ7CS8O6/exec";
 
 const COLORES_TEST = ["#0038A8", "#5C7A4B"];
 let contadorJSONP = 0;
