@@ -9,7 +9,7 @@ const PAGINAS = {
   rpe: "RPE.html",
   fuerza: "EntrenamientoFuerza.html",
   rendimiento: "ConsultarRendimientoFuerza.html",
-  test: "ConsultarTest.html",
+  test: "ConsultarTests.html",
   inicio: "index.html"
 };
 
