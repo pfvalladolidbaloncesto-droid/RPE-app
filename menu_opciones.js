@@ -9,6 +9,7 @@ const PAGINAS = {
   rpe: "RPE.html",
   fuerza: "EntrenamientoFuerza.html",
   rendimiento: "ConsultarRendimientoFuerza.html",
+  test: "ConsultarTest.html",
   inicio: "index.html"
 };
 
@@ -81,7 +82,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // CONSULTAR TEST
   // ======================================
 
-  // Permanece desactivado en el HTML.
+    const btnTest =
+    document.getElementById("btnTest");
+
+  if (btnTest) {
+    btnTest.addEventListener("click", () => {
+      window.location.href = PAGINAS.test;
+    });
+  }
 
   // ======================================
   // CERRAR SESIÓN
