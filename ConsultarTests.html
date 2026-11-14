@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0038A8">
+  <title>Consultar test · RVB</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 12px; background: #f4f6f9; color: #233347; font-family: system-ui, -apple-system, Arial, sans-serif; }
+    main { max-width: 900px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 12px #0000000e; }
+    header { position: relative; text-align: center; margin-bottom: 22px; }
+    h1 { font-size: 24px; margin: 0 35px 5px; }
+    #jugador { color: #65768a; font-size: 13px; }
+    .volver { position: absolute; top: 0; left: 0; background: transparent; border: 0; font-size: 24px; cursor: pointer; color: #26384a; }
+    .variables { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .variable { border: 1px solid #d9e1ea; border-radius: 10px; padding: 15px; min-width: 0; }
+    .variable h2 { font-size: 17px; margin: 0 0 14px; }
+    .variable:first-child { border-top: 4px solid #0038A8; }
+    .variable:last-child { border-top: 4px solid #5C7A4B; }
+    .campos { display: grid; grid-template-columns: 1fr 115px; gap: 10px; }
+    label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 7px; }
+    select { width: 100%; min-width: 0; height: 44px; border: 1px solid #c8d3df; border-radius: 7px; padding: 8px; background: white; font-size: 14px; }
+    #consultar { margin: 20px 0; width: 100%; padding: 14px; background: #0038A8; border: none; border-radius: 8px; font-size: 15px; font-weight: 700; color: white; cursor: pointer; }
+    #consultar:disabled { opacity: .55; cursor: wait; }
+    #resultados { border: 1px solid #e0e6ec; border-radius: 10px; min-height: 260px; padding: 16px; background: #fbfcfd; }
+    #resultados h2 { margin: 0 0 12px; font-size: 18px; }
+    .aviso { font-size: 14px; line-height: 1.55; color: #637386; }
+    .leyenda { display: flex; flex-wrap: wrap; gap: 10px 20px; font-size: 13px; margin: 10px 0 15px; }
+    .leyenda-item { display: flex; align-items: center; gap: 7px; }
+    .linea-leyenda { display: inline-block; width: 28px; height: 0; border-top: 3px solid; position: relative; }
+    .linea-leyenda::after { content: ''; position: absolute; left: 11px; top: -5px; width: 6px; height: 6px; border: 2px solid currentColor; background: white; border-radius: 50%; }
+    .grafica-scroll { width: 100%; overflow-x: auto; background: white; border: 1px solid #e5eaf0; border-radius: 8px; }
+    .grafica-scroll svg { display: block; max-width: none; }
+    .detalle-punto { margin-top: 11px; font-size: 13px; color: #25364a; min-height: 21px; }
+    .nota { margin: 11px 0 0; color: #66788a; font-size: 12px; line-height: 1.5; }
+    @media (max-width: 640px) {
+      body { padding: 8px; }
+      main { padding: 14px; }
+      h1 { font-size: 21px; }
+      .variables { grid-template-columns: 1fr; }
+      .campos { grid-template-columns: 1fr 112px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <button id="volver" class="volver" type="button" aria-label="Volver al menú">←</button>
+      <h1>Consultar test</h1>
+      <span id="jugador"></span>
+    </header>
+
+    <div class="variables">
+      <section class="variable" aria-labelledby="titulo1">
+        <h2 id="titulo1">Variable 1</h2>
+        <div class="campos">
+          <div>
+            <label for="test1">Test</label>
+            <select id="test1"><option value="">Cargando...</option></select>
+          </div>
+          <div>
+            <label for="lateralidad1">Lateralidad</label>
+            <select id="lateralidad1">
+              <option value="" selected>—</option>
+              <option value="IZQ">IZQ</option>
+              <option value="DCH">DCH</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <section class="variable" aria-labelledby="titulo2">
+        <h2 id="titulo2">Variable 2 (opcional)</h2>
+        <div class="campos">
+          <div>
+            <label for="test2">Test</label>
+            <select id="test2"><option value="">Cargando...</option></select>
+          </div>
+          <div>
+            <label for="lateralidad2">Lateralidad</label>
+            <select id="lateralidad2">
+              <option value="" selected>—</option>
+              <option value="IZQ">IZQ</option>
+              <option value="DCH">DCH</option>
+            </select>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <button id="consultar" type="button">CONSULTAR TEST</button>
+
+    <section id="resultados" aria-live="polite">
+      <p class="aviso">Selecciona al menos un test y pulsa «Consultar test» para visualizar los resultados.</p>
+    </section>
+  </main>
+  <script src="ConsultarTests.js?v=1"></script>
+</body>
+</html>
