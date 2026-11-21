@@ -27,20 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // CERRAR SESIÓN
   if (btnLogOut) {
     btnLogOut.addEventListener("click", () => {
-
-      const estaRecordado =
-        localStorage.getItem("remember") === "true";
-
-      if (!estaRecordado) {
-        localStorage.removeItem("Usuario");
-        localStorage.removeItem("PassRecordada");
-      }
-
-      localStorage.removeItem("EquipoPrin");
-      sessionStorage.removeItem("rvb_sesion_activa");
-
-      window.location.replace("index.html");
+      window.RVBJugadorAPI.salir();
     });
   }
-
 });

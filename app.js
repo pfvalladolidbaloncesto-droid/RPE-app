@@ -1,122 +1,82 @@
-
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxdPBRk_cUzzhT-NkjLkjTIuzs_YUAC3z-R88p7Nh-KZK6YxREiue0ctho1c1pNabndaQ/exec";
-
+/* Login RVB Jugadores: token temporal validado por el servidor.
+ * El gestor de contraseñas del navegador puede recordar la clave.
+ * Nunca se almacena la clave como texto en localStorage.
+ */
 document.addEventListener("DOMContentLoaded", () => {
-  const loginForm = document.getElementById("loginForm");
-  const usernameInput = document.getElementById("username");
-  const passwordInput = document.getElementById("password");
-  const rememberMeCheckbox = document.getElementById("rememberMe");
-  const btnEnter = document.getElementById("btnEnter");
+  const api = window.RVBJugadorAPI;
+  const form = document.getElementById("loginForm");
+  const usuario = document.getElementById("username");
+  const password = document.getElementById("password");
+  const recuerda = document.getElementById("rememberMe");
+  const boton = document.getElementById("btnEnter");
 
-  // 1. Cargar usuario y contraseña si está marcado "Recuérdame"
-  const estaRecordado =
-    localStorage.getItem("remember") === "true";
+  // Retirar contraseñas almacenadas por versiones antiguas de RVB.
+  localStorage.removeItem("PassRecordada");
+  sessionStorage.removeItem("rvb_sesion_activa");
+  const recordado = localStorage.getItem("remember") === "true";
+  recuerda.checked = recordado;
+  if (recordado) usuario.value = localStorage.getItem("Usuario") || "";
 
-  if (estaRecordado) {
-    usernameInput.value =
-      localStorage.getItem("Usuario") || "";
+  async function recuperarPassword() {
+    if (!recuerda.checked || !navigator.credentials?.get) return;
+    try {
+      const c = await navigator.credentials.get({ password: true, mediation: "silent" });
+      if (!c || c.type !== "password" || typeof c.password !== "string") return;
+      if (usuario.value && usuario.value.trim().toUpperCase() !== c.id.toUpperCase()) return;
+      if (password.value || document.activeElement === password) return;
+      usuario.value = c.id;
+      password.value = c.password;
+    } catch (_) { /* Chrome puede requerir selección manual de credencial. */ }
+  }
+  void recuperarPassword();
 
-    passwordInput.value =
-      localStorage.getItem("PassRecordada") || "";
-
-    rememberMeCheckbox.checked = true;
+  async function guardarPassword(identidad, clave) {
+    if (!recuerda.checked || !navigator.credentials?.store ||
+        typeof PasswordCredential !== "function") return;
+    try {
+      await navigator.credentials.store(new PasswordCredential({
+        id: identidad, password: clave, name: identidad
+      }));
+    } catch (_) { /* Autocompletado HTML como alternativa. */ }
   }
 
-  // 2. Evento Login
-  loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const userInput = usernameInput.value.trim();
-    const passInput = passwordInput.value.trim();
-
-    if (!userInput || !passInput) {
-      alert("Por favor, rellena todos los campos.");
-      return;
-    }
-
-    if (btnEnter) btnEnter.disabled = true;
-
-    // 3. Guardar la preferencia de "Recuérdame"
-    if (rememberMeCheckbox.checked) {
-      localStorage.setItem("remember", "true");
-      localStorage.setItem("Usuario", userInput);
-      localStorage.setItem("PassRecordada", passInput);
-    } else {
-      localStorage.removeItem("remember");
-      localStorage.removeItem("Usuario");
-      localStorage.removeItem("PassRecordada");
-    }
-
+  form.addEventListener("submit", async evento => {
+    evento.preventDefault();
+    const nombre = usuario.value.trim().toUpperCase();
+    const clave = password.value; // No modificar contraseñas con espacios arbitrariamente.
+    if (!nombre || !clave) { alert("Introduce usuario y contraseña."); return; }
+    boton.disabled = true;
+    boton.textContent = "Conectando...";
     try {
-      // 4. Comprobar credenciales en Google Apps Script
-      const response = await fetch(
-        `${APPS_SCRIPT_URL}?accion=consultar&num=${encodeURIComponent(userInput)}`,
-        {
-          cache: "no-store"
-        }
+      const r = await api.solicitarConEstado(
+        "iniciarSesionJugador", "estadoLoginJugador", { usuario: nombre, password: clave }
       );
-
-      if (!response.ok) {
-        throw new Error("Error en la respuesta del servidor");
+      if (!/^RVBJ_[0-9a-f]{64}$/.test(r.token) || Number(r.exp) <= Date.now()) {
+        throw new Error("El servidor no ha generado una sesión válida.");
       }
-
-      const data = await response.json();
-      let loginExitoso = false;
-
-      if (Array.isArray(data) && data.length > 0) {
-        const registro = data[0];
-
-        const passBD = String(
-          registro.columna2 ?? ""
-        ).trim();
-
-        if (passBD === passInput) {
-          loginExitoso = true;
-        }
-      }
-
-      // 5. Login correcto
-      if (loginExitoso) {
-        const registro = data[0];
-
-        // Guardar usuario y equipo
-        localStorage.setItem("Usuario", userInput);
-
-        localStorage.setItem(
-          "EquipoPrin",
-          registro.columna4 || registro.columna3 || ""
-        );
-
-        // NUEVO: activar la sesión para acceder al menú
-        sessionStorage.setItem(
-          "rvb_sesion_activa",
-          "true"
-        );
-
-        // Mantener RPE como página inicial
-        window.location.href = "RPE.html";
-
+      sessionStorage.setItem("rvb_jugador_sesion", JSON.stringify({
+        token: r.token, usuario: r.usuario, equipo: r.equipo || "", exp: Number(r.exp)
+      }));
+      localStorage.setItem("Usuario", r.usuario);
+      localStorage.setItem("EquipoPrin", r.equipo || "");
+      if (recuerda.checked) {
+        localStorage.setItem("remember", "true");
+        await guardarPassword(r.usuario, clave);
       } else {
-        alert("Verifica tus credenciales");
-
-        if (btnEnter) {
-          btnEnter.disabled = false;
+        localStorage.removeItem("remember");
+        if (navigator.credentials?.preventSilentAccess) {
+          try { await navigator.credentials.preventSilentAccess(); } catch (_) {}
         }
       }
-
+      password.value = "";
+      // Conservar RPE como pantalla inicial, tal como estaba.
+      window.location.replace("RPE.html");
     } catch (error) {
-      console.error(
-        "Error en la autenticación:",
-        error
-      );
-
-      alert(
-        "Error de conexión al verificar credenciales."
-      );
-
-      if (btnEnter) {
-        btnEnter.disabled = false;
-      }
+      console.error("Login jugadores:", error);
+      alert(error.message || "No se ha podido iniciar sesión.");
+    } finally {
+      boton.disabled = false;
+      boton.textContent = "Enter";
     }
   });
 });

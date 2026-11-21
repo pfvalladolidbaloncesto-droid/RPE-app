@@ -10,7 +10,8 @@ const PAGINAS = {
   fuerza: "EntrenamientoFuerza.html",
   rendimiento: "ConsultarRendimientoFuerza.html",
   test: "ConsultarTests.html",
-  inicio: "index.html"
+  inicio: "index.html",
+  cambiarContrasena: "cambiar_contrasena.html"
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -91,28 +92,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ======================================
+  // CAMBIAR CONTRASEÑA (la propia cuenta)
+  const btnCambio = document.getElementById("btnCambiarContrasena");
+  if (btnCambio) btnCambio.addEventListener("click", () => {
+    window.location.href = PAGINAS.cambiarContrasena;
+  });
+
   // CERRAR SESIÓN
-  // ======================================
-
-  const btnLogout =
-    document.getElementById("btnLogout");
-
-  if (btnLogout) {
-    btnLogout.addEventListener("click", () => {
-
-      sessionStorage.removeItem("rvb_sesion_activa");
-
-      localStorage.removeItem("EquipoPrin");
-
-      // Respetar la opción "Recuérdame"
-      if (localStorage.getItem("remember") !== "true") {
-        localStorage.removeItem("Usuario");
-        localStorage.removeItem("PassRecordada");
-      }
-
-      window.location.replace(PAGINAS.inicio);
-    });
-  }
-
+  const btnLogout = document.getElementById("btnLogout");
+  if (btnLogout) btnLogout.addEventListener("click", () => {
+    window.RVBJugadorAPI.salir();
+  });
 });

@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "rpe-pwa-v4";
+const CACHE_NAME = "rpe-pwa-v7-sesion-y-password";
 
 const ASSETS_TO_CACHE = [
   "./",
@@ -12,6 +12,10 @@ const ASSETS_TO_CACHE = [
   "./Final.html",
   "./style.css",
   "./app.js",
+  "./auth_jugadores_api.js",
+  "./sesion_guard_jugador.js",
+  "./cambiar_contrasena.html",
+  "./cambiar_contrasena_jugador.js",
   "./RPE.js",
   "./Final.js",
   "./manifest.json",
