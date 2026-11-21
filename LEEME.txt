@@ -1,0 +1,10 @@
+CORRECCIÓN: Menú de opciones redirige a index.html después de iniciar sesión.
+
+Sube los archivos de esta carpeta a la raíz del repositorio de la PWA de jugadores y sustituye los existentes.
+Los archivos HTML se actualizan SOLO para cargar sesion_guard_jugador.js?v=2; el resto de su contenido está intacto.
+El guard protege la navegación por token local y fecha de expiración, sin llamadas a Google en cada cambio de página.
+El login sigue verificando usuario y contraseña en Apps Script y creando el token.
+Las operaciones sensibles de Apps Script siguen requiriendo validación de token en el servidor.
+El botón Cerrar sesión sigue borrando la sesión y revocando el token en Apps Script.
+El token NO se guarda en localStorage, sino en sessionStorage: al cerrar la pestaña se pierde.
+No hay cambios que aplicar en Apps Script, RPE, Fuerza ni Test.
