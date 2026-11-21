@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "rpe-pwa-v8-menu-sesion-estable";
+const CACHE_NAME = "rpe-pwa-v9-fix-url-login";
 
 const ASSETS_TO_CACHE = [
   "./",

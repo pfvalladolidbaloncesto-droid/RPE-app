@@ -5,14 +5,14 @@
  */
 (function (global) {
   "use strict";
-  const URL = "https://script.google.com/macros/s/AKfycbyso6H_FvkRCOu5_y0BxX4pQMPvwpaxH12_lW2MJWyXgEGp4w49rnkvpy2xTBWbrLI33Q/exec";
+  const URL_API_JUGADORES = "https://script.google.com/macros/s/AKfycbyso6H_FvkRCOu5_y0BxX4pQMPvwpaxH12_lW2MJWyXgEGp4w49rnkvpy2xTBWbrLI33Q/exec";
   let contador = 0;
 
   function leer(accion, parametros = {}) {
     return new Promise((resolve, reject) => {
       const callback = `rvbAlta_${Date.now()}${++contador}`;
       const script = document.createElement("script");
-      const destino = new URL(URL);
+      const destino = new URL(URL_API_JUGADORES);
       let concluido = false;
       const reloj = setTimeout(() => terminar(new Error("Tiempo de espera agotado.")), 20000);
 
@@ -46,7 +46,7 @@
 
   async function enviar(accion, parametros = {}) {
     // El POST evita exponer la contraseña en historial, URL y logs de GET.
-    await fetch(URL, {
+    await fetch(URL_API_JUGADORES, {
       method: "POST", mode: "no-cors", credentials: "omit", cache: "no-store",
       body: new URLSearchParams({ accion, ...parametros })
     });
@@ -88,12 +88,12 @@
     if (actual?.token) {
       const cuerpo = new URLSearchParams({ accion: "cerrarSesionJugador", token: actual.token });
       try {
-        if (navigator.sendBeacon) navigator.sendBeacon(URL, cuerpo);
+        if (navigator.sendBeacon) navigator.sendBeacon(URL_API_JUGADORES, cuerpo);
         else void enviar("cerrarSesionJugador", { token: actual.token });
       } catch (_) { /* Cierre local inmediato; el token expira en el servidor. */ }
     }
     global.location.replace("index.html");
   }
 
-  global.RVBJugadorAPI = { URL, leer, enviar, solicitarConEstado, sesion, salir };
+  global.RVBJugadorAPI = { URL: URL_API_JUGADORES, leer, enviar, solicitarConEstado, sesion, salir };
 })(window);
