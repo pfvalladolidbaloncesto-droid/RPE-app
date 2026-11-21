@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "rpe-pwa-v9-fix-url-login";
+const CACHE_NAME = "rpe-pwa-v10-fix-password-confirmation";
 
 const ASSETS_TO_CACHE = [
   "./",

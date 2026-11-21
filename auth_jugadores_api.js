@@ -12,7 +12,7 @@
     return new Promise((resolve, reject) => {
       const callback = `rvbAlta_${Date.now()}${++contador}`;
       const script = document.createElement("script");
-      const destino = new URL(URL_API_JUGADORES);
+      const destino = new global.URL(URL_API_JUGADORES);
       let concluido = false;
       const reloj = setTimeout(() => terminar(new Error("Tiempo de espera agotado.")), 20000);
 
