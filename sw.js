@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "rpe-pwa-v10-fix-password-confirmation";
+const CACHE_NAME = "rpe-pwa-v12-equipo-default";
 
 const ASSETS_TO_CACHE = [
   "./",
